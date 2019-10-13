@@ -1,15 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
+
+	c "config"
 
 	"github.com/JessikaMurphy/golang-angular/handlers"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	jose "gopkg.in/square/go-jose.v2"
 )
 
@@ -47,8 +50,34 @@ func main() {
 }
 
 func setAuth0Variables() {
-	audience = os.Getenv("AUTH0_API_IDENTIFIER")
-	domain = os.Getenv("AUTH0_DOMAIN")
+
+	// Set the file name of the configurations file
+	viper.SetConfigName("config")
+	// Set the path to look for the configurations file
+	viper.AddConfigPath("./config")
+
+	// Enable VIPER to read Environment Variables
+	viper.AutomaticEnv()
+
+	viper.SetConfigType("yml")
+
+	var configuration c.ApiConfigurations
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
+	}
+	// Set undefined variables
+	viper.SetDefault("AUTH0_API_IDENTIFIER", "AUTH0_DOMAIN")
+
+	err := viper.Unmarshal(&configuration)
+	if err != nil {
+		fmt.Printf("Unable to decode into struct, %v", err)
+	}
+	fmt.Println("AUTH0_API_IDENTIFIER is\t", configuration.AUTH0_API_IDENTIFIER)
+	fmt.Println("AUTH0_DOMAIN is\t", configuration.AUTH0_DOMAIN)
+
+	audience = configuration.AUTH0_API_IDENTIFIER
+	domain = configuration.AUTH0_DOMAIN
+
 }
 
 // ValidateRequest will verify that a token received from an http request

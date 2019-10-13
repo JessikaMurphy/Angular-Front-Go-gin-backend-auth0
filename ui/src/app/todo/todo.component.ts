@@ -31,8 +31,8 @@ export class TodoComponent implements OnInit {
       complete: false
     }
     this.todoService.addTodo(newTodo).subscribe(() => {
-      this.getAll();
-      this.todoMessage = '';
+      this.getAll()
+      this.todoMessage = ''
     })
   }
   completeTodo(todo: Todo) {
