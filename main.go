@@ -36,6 +36,8 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(authRequired())
 	authorized.GET("/todo", handlers.GetTodoListHandler)
+	authorized.GET("/kanji", handlers.GetKanjiListHandler)
+	authorized.POST("/kanji", handlers.AddApiKeyHandler)
 	authorized.POST("/todo", handlers.AddTodoHandler)
 	authorized.DELETE("/todo/:id", handlers.DeleteTodoHandler)
 	authorized.PUT("/todo", handlers.CompleteTodoHandler)

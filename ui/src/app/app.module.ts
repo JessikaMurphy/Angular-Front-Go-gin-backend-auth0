@@ -13,14 +13,16 @@ import { TodoComponent } from './todo/todo.component'
 import { TodoService } from './todo.service'
 
 import { FormsModule } from '@angular/forms'
-import { TokenInterceptor } from './token.interceptor'
+import { TokenInterceptor } from './token.interceptor';
+import { KanjiComponent } from './kanji/kanji.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     TodoComponent,
-    CallbackComponent
+    CallbackComponent,
+    KanjiComponent
   ],
   imports: [
     AppRoutingModule,
