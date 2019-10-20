@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KanjiService, Kanji, ApiKey } from '../kanji.service'
+import { KanjiService, Kanji, ApiKey,User } from '../kanji.service'
 import { Observable } from 'rxjs';
 
 @Component({
@@ -9,18 +9,11 @@ import { Observable } from 'rxjs';
 })
 export class KanjiComponent implements OnInit {
 
-  data: any[] = [];
   apiKey: string
-  userName: string
-  kanji$: Observable<any>
+  username: string
+  kanjis: Kanji[]
 
   constructor(private kanjiService: KanjiService) {
-    this.kanjiService.getKanjiList().subscribe((res: any) => {
-      this.data = res;
-      console.log(this.data)
-    }, err => {
-      console.log(err);
-    });
   }
 
   ngOnInit() {
@@ -28,13 +21,20 @@ export class KanjiComponent implements OnInit {
   }
 
   getAll(){
-    this.kanji$ = this.kanjiService.getKanjiList()
+    this.kanjiService.getKanjiList().subscribe(kanjis =>{
+      this.kanjis = kanjis
+      console.log(this.kanjis)
+    }
+    )
   }
   addApiKey(){
     var apiKey : ApiKey = {
       message: this.apiKey
     }
-    this.kanjiService.addApiKey(apiKey).subscribe((data: Kanji[]) => {
+    this.kanjiService.addApiKey(apiKey).subscribe(user => {
+
+      this.username = JSON.stringify(user)
+      console.log(this.username)
       this.getAll()
       this.apiKey = ''
     })

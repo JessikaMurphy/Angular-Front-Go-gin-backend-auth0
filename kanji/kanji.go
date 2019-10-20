@@ -30,7 +30,7 @@ func Get() []Kanji {
 
 //Kanji hold the kanji
 type Kanji struct {
-	Characters string `json:"kanji"`
+	Characters string `json:"characters"`
 }
 
 //UserHolder this is a stripped down struct holder for the json returned by the url call
@@ -105,7 +105,6 @@ func queryForLists(user User) {
 	str2 := "vocabulary"
 	for i := range collectionHolder.Data {
 		if collectionHolder.Data[i].Object == str && collectionHolder.Data[i].Data.Level < user.Level {
-			kanjiList = append(kanjiList, collectionHolder.Data[i].Data.Characters)
 			addKanjiToKanjiList(collectionHolder.Data[i].Data.Characters)
 		}
 		if collectionHolder.Data[i].Object == str2 && collectionHolder.Data[i].Data.Level < user.Level {

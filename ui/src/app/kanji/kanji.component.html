@@ -1,18 +1,16 @@
-<p>kanji works!</p>
+<h1>
+  Kanji Http
+</h1>
 
 <input placeholder="put api key here" [(ngModel)]="apiKey">
 <button class="btn btn-primary" (click)="addApiKey()">Add</button>
+<p>Welcome Message: {{ username }}</p>
 
-<h2>Kanji</h2>
-<table class="table">
-  <thead>
+<table>
   <tr>
-    <th>Character</th>
+    <th>Characters</th>
   </tr>
-  </thead>
-  <tbody>
-        <div *ngIf="kanji$ | async as kanji">
-            Kanji character is {{ kanji.characters }}
-        </div>
-  </tbody>
+  <tr *ngFor="let kanji of kanjis">
+    <td>{{ kanji.characters }}</td>
+  </tr>
 </table>

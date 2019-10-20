@@ -11,7 +11,7 @@ const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'todo', component: TodoComponent,  canActivate: [AuthGuardService] },
     { path: 'callback', component: CallbackComponent },
-    { path: 'kanji', component: KanjiComponent }
+    { path: 'kanji', component: KanjiComponent,canActivate: [AuthGuardService] }
   ]
 
   @NgModule({

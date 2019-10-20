@@ -15,6 +15,7 @@ import { TodoService } from './todo.service'
 import { FormsModule } from '@angular/forms'
 import { TokenInterceptor } from './token.interceptor';
 import { KanjiComponent } from './kanji/kanji.component'
+import { KanjiService } from './kanji.service'
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { KanjiComponent } from './kanji/kanji.component'
     FormsModule,
     HttpClientModule
   ],
-  providers: [AuthGuardService,AuthService,TodoService,{
+  providers: [AuthGuardService,AuthService,TodoService,KanjiService,{
     provide: HTTP_INTERCEPTORS,
     useClass: TokenInterceptor,
     multi: true
