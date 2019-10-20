@@ -37,7 +37,7 @@ func main() {
 	authorized.Use(authRequired())
 	authorized.GET("/todo", handlers.GetTodoListHandler)
 	authorized.GET("/kanji", handlers.GetKanjiListHandler)
-	authorized.POST("/kanji", handlers.AddApiKeyHandler)
+	authorized.POST("/kanji", handlers.AddAPIKeyHandler)
 	authorized.POST("/todo", handlers.AddTodoHandler)
 	authorized.DELETE("/todo/:id", handlers.DeleteTodoHandler)
 	authorized.PUT("/todo", handlers.CompleteTodoHandler)
@@ -77,6 +77,8 @@ func terminateWithError(statusCode int, message string, c *gin.Context) {
 	c.JSON(statusCode, gin.H{"error": message})
 	c.Abort()
 }
+
+//CORSMiddleware cross reference handler?
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

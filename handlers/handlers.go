@@ -31,34 +31,34 @@ func AddTodoHandler(c *gin.Context) {
 	c.JSON(statusCode, gin.H{"id": todo.Add(todoItem.Message)})
 }
 
-//this adds api keys
-func AddApiKeyHandler(c *gin.Context) {
-	apiKey, statusCode, err := convertHTTPBodyToApiKey(c.Request.Body)
+//AddAPIKeyHandler this adds api keys
+func AddAPIKeyHandler(c *gin.Context) {
+	user, statusCode, err := convertHTTPBodyToAPIKey(c.Request.Body)
 	if err != nil {
 		c.JSON(statusCode, err)
 		return
 	}
-	c.JSON(statusCode, gin.H{"id": kanji.Add(apiKey.Message)})
+	c.JSON(statusCode, gin.H{"userName": kanji.Add(user.Message)})
 }
 
 //this converts
-func convertHTTPBodyToApiKey(httpBody io.ReadCloser) (kanji.ApiKey, int, error) {
+func convertHTTPBodyToAPIKey(httpBody io.ReadCloser) (kanji.User, int, error) {
 	body, err := ioutil.ReadAll(httpBody)
 	if err != nil {
-		return kanji.ApiKey{}, http.StatusInternalServerError, err
+		return kanji.User{}, http.StatusInternalServerError, err
 	}
 	defer httpBody.Close()
-	return convertJSONBodyToApiKey(body)
+	return convertJSONBodyToAPIKey(body)
 }
 
 //this also converts
-func convertJSONBodyToApiKey(jsonBody []byte) (kanji.ApiKey, int, error) {
-	var userApiKey kanji.ApiKey
-	err := json.Unmarshal(jsonBody, &userApiKey)
+func convertJSONBodyToAPIKey(jsonBody []byte) (kanji.User, int, error) {
+	var user kanji.User
+	err := json.Unmarshal(jsonBody, &user)
 	if err != nil {
-		return kanji.ApiKey{}, http.StatusBadRequest, err
+		return kanji.User{}, http.StatusBadRequest, err
 	}
-	return userApiKey, http.StatusOK, nil
+	return user, http.StatusOK, nil
 }
 
 // DeleteTodoHandler will delete a specified todo based on user http input

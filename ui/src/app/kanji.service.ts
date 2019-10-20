@@ -19,7 +19,7 @@ export class KanjiService {
 }
 
 export class Kanji {
-  symbol: string
+  characters: string
 }
 export class ApiKey {
   message: string

@@ -2,3 +2,17 @@
 
 <input placeholder="put api key here" [(ngModel)]="apiKey">
 <button class="btn btn-primary" (click)="addApiKey()">Add</button>
+
+<h2>Kanji</h2>
+<table class="table">
+  <thead>
+  <tr>
+    <th>Character</th>
+  </tr>
+  </thead>
+  <tbody>
+        <div *ngIf="kanji$ | async as kanji">
+            Kanji character is {{ kanji.characters }}
+        </div>
+  </tbody>
+</table>
