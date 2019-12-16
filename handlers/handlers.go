@@ -38,7 +38,7 @@ func AddAPIKeyHandler(c *gin.Context) {
 		c.JSON(statusCode, err)
 		return
 	}
-	c.JSON(statusCode, gin.H{"userName": kanji.Add(user.Message)})
+	c.JSON(statusCode, kanji.Add(user.Message))
 }
 
 //this converts

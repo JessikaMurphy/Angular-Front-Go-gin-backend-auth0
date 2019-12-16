@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { KanjiService, Kanji, ApiKey,User } from '../kanji.service'
+import { KanjiService, Kanji, ApiKey, User, Vocab } from '../kanji.service'
 import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-kanji',
@@ -11,34 +12,41 @@ export class KanjiComponent implements OnInit {
 
   apiKey: string
   username: string
-  kanjis: Kanji[]
+  kanjiList: Kanji[]
+  vocabList: Vocab[]
+  user: User
+  users: any = []
 
   constructor(private kanjiService: KanjiService) {
   }
 
   ngOnInit() {
-    this.getAll()
+    if(localStorage.getItem('kanjiList')!=null){
+      this.kanjiList = JSON.parse(localStorage.getItem('kanjiList'))
+    }
+    if(localStorage.getItem('vocabList')!=null){
+      this.vocabList = JSON.parse(localStorage.getItem('vocabList'))
+    }
   }
 
   getAll(){
-    this.kanjiService.getKanjiList().subscribe(kanjis =>{
-      this.kanjis = kanjis
-      console.log(this.kanjis)
-    }
-    )
+    return this.kanjiService.getKanjiList().subscribe(data =>{
+      this.user = data
+      }
+    ) 
   }
   addApiKey(){
     var apiKey : ApiKey = {
       message: this.apiKey
     }
-    this.kanjiService.addApiKey(apiKey).subscribe(user => {
-
-      this.username = JSON.stringify(user)
-      console.log(this.username)
-      this.getAll()
-      this.apiKey = ''
-    })
+    this.kanjiService.addApiKey(apiKey).subscribe(user => {this.username = user.user
+      this.kanjiList = user.kanjiList
+      localStorage.setItem('kanjiList',JSON.stringify(user.kanjiList))
+      localStorage.setItem('vocabList',JSON.stringify(user.vocabList))
+      this.vocabList = user.vocabList
+    })    
+    this.apiKey = ''
   }
 
-
+  
 }

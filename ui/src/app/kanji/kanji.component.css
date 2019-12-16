@@ -5,3 +5,13 @@ button {
   td {
     vertical-align: unset;
   }
+  
+table.one {
+    float:left;
+    width:45%;
+}
+table.two{
+  float:right;
+  width:45%;
+}
+

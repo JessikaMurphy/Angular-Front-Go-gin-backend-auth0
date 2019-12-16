@@ -6,11 +6,19 @@
 <button class="btn btn-primary" (click)="addApiKey()">Add</button>
 <p>Welcome Message: {{ username }}</p>
 
-<table>
+<table class="one">
   <tr>
     <th>Characters</th>
   </tr>
-  <tr *ngFor="let kanji of kanjis">
-    <td>{{ kanji.characters }}</td>
+  <tr *ngFor="let kanji of kanjiList">
+    <td>{{ kanji.kanji.characters }}</td>
+  </tr>
+</table>
+<table class="two">
+  <tr>
+    <th>Vocab</th>
+  </tr>
+  <tr *ngFor="let vocab of vocabList">
+    <td>{{ vocab.vocab.characters }}</td>
   </tr>
 </table>

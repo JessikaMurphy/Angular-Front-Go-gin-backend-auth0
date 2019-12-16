@@ -54,7 +54,7 @@ func setAuth0Variables() {
 }
 
 // ValidateRequest will verify that a token received from an http request
-// is valid and signyed by Auth0
+// is valid and signed by Auth0
 func authRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -89,7 +89,6 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(204)
 			return
 		}
-
 		c.Next()
 	}
 }
