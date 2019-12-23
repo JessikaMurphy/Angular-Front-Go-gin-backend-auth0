@@ -15,7 +15,11 @@ import { TodoService } from './todo.service'
 import { FormsModule } from '@angular/forms'
 import { TokenInterceptor } from './token.interceptor';
 import { KanjiComponent } from './kanji/kanji.component'
-import { KanjiService } from './kanji.service'
+import { KanjiService } from './kanji.service';
+import { NodesComponent } from './nodes/nodes.component';
+import { D3Service, D3_DIRECTIVES } from './d3';
+import { GraphComponent } from './visuals/graph/graph.component';
+import { SHARED_VISUALS } from './visuals/shared';
 
 @NgModule({
   declarations: [
@@ -23,7 +27,11 @@ import { KanjiService } from './kanji.service'
     HomeComponent,
     TodoComponent,
     CallbackComponent,
-    KanjiComponent
+    KanjiComponent,
+    NodesComponent,
+    SHARED_VISUALS,
+    D3_DIRECTIVES,
+    GraphComponent
   ],
   imports: [
     AppRoutingModule,
@@ -31,7 +39,7 @@ import { KanjiService } from './kanji.service'
     FormsModule,
     HttpClientModule
   ],
-  providers: [AuthGuardService,AuthService,TodoService,KanjiService,{
+  providers: [D3Service, NodesComponent, AuthGuardService,AuthService,TodoService,KanjiService,{
     provide: HTTP_INTERCEPTORS,
     useClass: TokenInterceptor,
     multi: true

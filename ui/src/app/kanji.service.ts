@@ -46,15 +46,21 @@ export class KanjiService {
 }
 
 export class Kanji {
+  id: number
   characters: string
-  constructor(characters: string) {
+  constructor(id: number, characters: string) {
+    this.id = id
     this.characters = characters
   }
 }
 export class Vocab {
+  id: number
   characters: string
-  constructor(characters: string) {
+  component_subject_ids: number[]
+  constructor(id: number, characters: string, component_subject_ids: number[]) {
+    this.id = id
     this.characters = characters
+    this.component_subject_ids = component_subject_ids
   }
 }
 export class ApiKey {

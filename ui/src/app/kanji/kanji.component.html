@@ -11,7 +11,7 @@
     <th>Characters</th>
   </tr>
   <tr *ngFor="let kanji of kanjiList">
-    <td>{{ kanji.kanji.characters }}</td>
+    <td>{{ kanji.kanji.characters }},{{kanji.kanji.id}}</td>
   </tr>
 </table>
 <table class="two">
@@ -19,6 +19,6 @@
     <th>Vocab</th>
   </tr>
   <tr *ngFor="let vocab of vocabList">
-    <td>{{ vocab.vocab.characters }}</td>
+    <td>{{ vocab.vocab.characters }} , {{vocab.vocab.component_subject_ids}}</td>
   </tr>
 </table>

@@ -33,12 +33,15 @@ func Get() User {
 
 //Kanji struct
 type Kanji struct {
+	ID         int    `json:"id"`
 	Characters string `json:"characters"`
 }
 
 //Vocab struct
 type Vocab struct {
-	Characters string `json:"characters"`
+	ID           int    `json:"id"`
+	Characters   string `json:"characters"`
+	ComponentIDs []int  `json:"component_subject_ids"`
 }
 
 //UserHolder this is a stripped down struct holder for the json returned by the url call
@@ -87,7 +90,7 @@ func newAPI(msg string) User {
 }
 
 func queryForLists(user User) User {
-	url := "https://api.wanikani.com/v2/subjects/"
+	var url = "https://api.wanikani.com/v2/subjects/"
 	var bearer = "Bearer " + user.Message
 	counter := 0
 	req, err := http.NewRequest("GET", url, nil)
@@ -109,21 +112,18 @@ func queryForLists(user User) User {
 	str2 := "vocabulary"
 	for i := range collectionHolder.Data {
 		if collectionHolder.Data[i].Object == str && collectionHolder.Data[i].Data.Level <= user.Level {
-			addKanjiToKanjiList(collectionHolder.Data[i].Data.Characters)
+			addKanjiToKanjiList(collectionHolder.Data[i].ID, collectionHolder.Data[i].Data.Characters)
 		}
-	}
-	for i := range collectionHolder.Data {
 		if collectionHolder.Data[i].Object == str2 && collectionHolder.Data[i].Data.Level <= user.Level {
-			addVocabToVocabList(collectionHolder.Data[i].Data.Characters)
+			addVocabToVocabList(collectionHolder.Data[i].ID, collectionHolder.Data[i].Data.Characters, collectionHolder.Data[i].Data.ComponentIDs)
 		}
 	}
-	log.Println("got through first page of query")
-	log.Println(list)
+	var nexturl = collectionHolder.Pages.NextURL
 
-	for {
-		url := collectionHolder.Pages.NextURL
-		println("url for query changed" + url)
-		req, err := http.NewRequest("GET", url, nil)
+	for URLsNotTheSame(nexturl, url) {
+		var collectionHolder CollectionHolder
+		println("url for query changed" + nexturl)
+		req, err := http.NewRequest("GET", nexturl, nil)
 		req.Header.Add("Authorization", bearer)
 		client := &http.Client{}
 		resp, err := client.Do(req)
@@ -138,33 +138,35 @@ func queryForLists(user User) User {
 		}
 		for i := range collectionHolder.Data {
 			if collectionHolder.Data[i].Object == str && collectionHolder.Data[i].Data.Level <= user.Level {
-				addKanjiToKanjiList(collectionHolder.Data[i].Data.Characters)
+				addKanjiToKanjiList(collectionHolder.Data[i].ID, collectionHolder.Data[i].Data.Characters)
 			}
-		}
-		for i := range collectionHolder.Data {
 			if collectionHolder.Data[i].Object == str2 && collectionHolder.Data[i].Data.Level <= user.Level {
-				addVocabToVocabList(collectionHolder.Data[i].Data.Characters)
+				addVocabToVocabList(collectionHolder.Data[i].ID, collectionHolder.Data[i].Data.Characters, collectionHolder.Data[i].Data.ComponentIDs)
 			}
 		}
 		counter = counter + 1
 		log.Println("after the query : ", counter)
-		log.Println(len(list))
-		if !compareURLs(collectionHolder, url) {
-			break
-		}
+		log.Println(len(vlist))
+
+		nexturl = collectionHolder.Pages.NextURL
+		url = collectionHolder.URL
 	}
 	return addListsToUser(user, list, vlist)
-
 }
 
 type KanjiList []struct {
 	Kanji struct {
+		ID         int    `json:"id"`
 		Characters string `json:"characters"`
 	} `json:"kanji"`
 }
+
+//VocabList local struct for storing Vocab items
 type VocabList []struct {
 	Vocab struct {
-		Characters string `json:"characters"`
+		ID           int    `json:"id"`
+		Characters   string `json:"characters"`
+		ComponentIDs []int  `json:"component_subject_ids"`
 	} `json:"vocab"`
 }
 
@@ -174,47 +176,48 @@ func addListsToUser(user User, kanjiList []Kanji, vocabList []Vocab) User {
 	voc := make(VocabList, len(vocabList))
 
 	for i := range tmp {
-		tmp[i].Kanji = Kanji{kanjiList[i].Characters}
+		tmp[i].Kanji = Kanji{kanjiList[i].ID, kanjiList[i].Characters}
 	}
 	for i := range voc {
-		voc[i].Vocab = Vocab{vocabList[i].Characters}
+		voc[i].Vocab = Vocab{vlist[i].ID, vlist[i].Characters, vlist[i].ComponentIDs}
 	}
 
 	user.KanjiList = tmp
 	user.VocabList = voc
-	log.Println(user.KanjiList[25].Kanji.Characters)
-	log.Println(user.VocabList[25].Vocab.Characters)
 	return user
 }
 
-func newKanji(kanjiString string) Kanji {
-	return Kanji{Characters: kanjiString}
+func newKanji(id int, kanjiString string) Kanji {
+	return Kanji{ID: id, Characters: kanjiString}
 }
-func addKanjiToKanjiList(kanjiString string) {
-	k := newKanji(kanjiString)
+func addKanjiToKanjiList(id int, kanjiString string) {
+	k := newKanji(id, kanjiString)
 	mtx.Lock()
 	list = append(list, k)
 	mtx.Unlock()
 }
-func addVocabToVocabList(vocabString string) {
-	v := newVocabTerm(vocabString)
+func addVocabToVocabList(id int, vocabString string, components []int) {
+	v := newVocabTerm(id, vocabString, components)
+	log.Println(v)
 	mtx.Lock()
 	vlist = append(vlist, v)
 	mtx.Unlock()
 }
-func newVocabTerm(vocabString string) Vocab {
+func newVocabTerm(id int, vocabString string, components []int) Vocab {
 	return Vocab{
-		Characters: vocabString,
+		ID:           id,
+		Characters:   vocabString,
+		ComponentIDs: components,
 	}
 }
 
-//checkNextUrl checks if the nextUrl field in the struct is set to null or not
-func compareURLs(collectionHolder CollectionHolder, url string) bool {
-	println("next:{} last: {}", collectionHolder.Pages.NextURL, url)
-	if string(collectionHolder.Pages.NextURL) == url {
-		return false
+//URLsNotTheSame checks if the nextUrl field in the struct is set to null or not
+func URLsNotTheSame(nexturl string, url string) bool {
+	println("next: ", nexturl+"\nprevious: ", url)
+	if nexturl != url && nexturl != "" {
+		return true
 	}
-	return true
+	return false
 }
 
 //User the user struct we are trying to pass up and parse
@@ -224,12 +227,15 @@ type User struct {
 	Level     int    `json:"level"`
 	KanjiList []struct {
 		Kanji struct {
+			ID         int    `json:"id"`
 			Characters string `json:"characters"`
 		} `json:"kanji"`
 	} `json:"kanjiList"`
 	VocabList []struct {
 		Vocab struct {
-			Characters string `json:"characters"`
+			ID           int    `json:"id"`
+			Characters   string `json:"characters"`
+			ComponentIDs []int  `json:"component_subject_ids"`
 		} `json:"vocab"`
 	} `json:"vocabList"`
 }
@@ -247,8 +253,9 @@ type CollectionHolder struct {
 		ID     int    `json:"id"`
 		Object string `json:"object"`
 		Data   struct {
-			Level      int    `json:"level"`
-			Characters string `json:"characters"`
+			Level        int    `json:"level"`
+			Characters   string `json:"characters"`
+			ComponentIDs []int  `json:"component_subject_ids"`
 		} `json:"data"`
 	} `json:"data"`
 }

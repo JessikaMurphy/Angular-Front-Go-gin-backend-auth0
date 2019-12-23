@@ -1,1 +1,3 @@
-
+AUTH0_API_IDENTIFIER: https://kanji-connection-api/
+AUTH0_DOMAIN: dev--gjcrbou.auth0.com
+INSTALL_DIRECTORY: $GOPATH/bin
